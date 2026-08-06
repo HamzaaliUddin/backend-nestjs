@@ -1,13 +1,14 @@
-import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
+import 'reflect-metadata';
+
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
 
-  // Security HTTP headers
   app.use(helmet());
 
   app.enableCors({
@@ -24,8 +25,12 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
+
+  await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap().catch((err) => {
-  console.error(err);
+
+bootstrap().catch((error: unknown) => {
+  console.error(error);
+  process.exit(1);
 });
